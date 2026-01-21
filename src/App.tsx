@@ -1,5 +1,4 @@
-import React from "react";
-import { ChevronDown, Folder, FileCode, FileText } from "lucide-react";
+import { ChevronDown, Folder, FileCode } from "lucide-react";
 import { entries } from "./const.ts";
 import "./App.css";
 
