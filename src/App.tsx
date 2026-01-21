@@ -7,7 +7,6 @@ function App() {
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-[#a3a3a3] font-mono">
       
-      {/* Top Bar Area */}
       <div className="flex items-center px-4 py-3 bg-[#161616] border-b border-white/5 text-[12px]">
         <div className="flex gap-2 mr-6">
           <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
@@ -52,7 +51,6 @@ function FileRow(props: any) {
     gapSize = "w-10";
   }
 
-  // Logic for the text color
   let labelColor = "text-white font-medium";
   if (props.isFile === true) {
     labelColor = "text-[#d4d4d4]";
