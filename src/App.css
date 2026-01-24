@@ -1,10 +1,9 @@
 @import "tailwindcss";
 
-
 body { 
-  background-color:#08080B
-  
+  background-color: #08080B;
 }
+
 @font-face {
   font-family: 'JetBrains Mono';
   src: url('./fonts/JetBrainsMono-Regular.woff2') format('woff2');
@@ -18,11 +17,7 @@ body {
   font-weight: 700;
   font-style: normal;
 }
-* {
-  font-family: 'JetBrains Mono', monospace;
-}
 
-/* Or more specifically: */
-body {
+* {
   font-family: 'JetBrains Mono', monospace;
 }

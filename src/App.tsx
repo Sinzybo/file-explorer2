@@ -57,7 +57,7 @@ export default function App() {
       </div>
       {entries.map((obj, index) => {
         return (
-          <div key={obj.path} className="ml-10 flex ">
+          <div key={obj.path} className="ml-10 flex items-center py-1.5">
             {obj.isFile ? (
               <div
                 className={`
@@ -136,7 +136,7 @@ export default function App() {
           <span className="ml-2 text-xs"> | </span>
           <span className={`${selectedFileCharCount > 0 ? "text-[#06B6D4]" : "text-zinc-500"}`}>{selectedFileCharCount}</span>
           <span className="ml-3">/</span>
-          <span className="ml-1">{formatNumber(sumCharCount)}</span>
+          <span className="ml-1">{formatNumber(sumCharCount)} tokens</span>
         </div>
         
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -166,7 +166,7 @@ export default function App() {
 
         <div className="absolute right-4 top-1/2 -translate-y-1/2">
           <button className={`px-4 py-1.5 text-sm rounded transition-colors ${fileSelected > 0 ? "bg-blue-500 text-white" : "bg-zinc-700 text-zinc-400"}`}>
-  EXECUTE ⏎
+  EXECUTE ⌘
 </button>
         </div>
       </div>
