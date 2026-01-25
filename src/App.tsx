@@ -50,37 +50,40 @@ export default function App() {
     });
     setSelectedFileCharCount(total);
   }, [fileSelected]);
+
   useEffect(() => {
     const handleKeyDown = (event: any) => {
-      if (event.key === "ArrowDown") {
+      if(event.key === "ArrowDown") { 
         setHighlighted((prev) => {
-          if (prev === entries.length - 1) {
-            return 0;
+          if(prev === entries.length - 1 ) {
+           return 0
           } else {
-            return prev + 1;
+            return prev + 1
           }
-        });
-      } else if (event.key === "ArrowUp") {
+        }) 
+      } else if(event.key === "ArrowUp") { 
         setHighlighted((prev) => {
-          if (prev === 0) {
-            return entries.length - 1;
+          if(prev === 0 ) {
+            return entries.length - 1
           } else {
-            return prev - 1;
+            return prev - 1
           }
-        });
-      } else if (event.key === " ") {
+        })
+      } else if (event.key === " ") { 
+        event.preventDefault();
         const newArray = [...checkedState];
         newArray[highlighted] = !newArray[highlighted];
         setCheckedState(newArray);
       }
     };
-
+    
     window.addEventListener("keydown", handleKeyDown);
-
+    
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [highlighted, checkedState]);
+
   return (
     <div>
       <div className="flex items-center px-4 py-3 bg-black text-[12px]">
@@ -100,13 +103,12 @@ export default function App() {
         return (
           <div
             key={obj.path}
-            className={` select-none pl-10 flex items-center py-1.5 relative hover:bg-zinc-900 cursor-pointer ${highlighted === index ? "bg-zinc-800" : ""}`}
-
+            className={`pl-10 flex items-center py-1.5 relative hover:bg-zinc-900 cursor-pointer select-none ${highlighted === index ? "bg-zinc-800" : ""}`}
             onClick={() => {
-  const newArray = [...checkedState];
-  newArray[index] = !newArray[index];
-  setCheckedState(newArray);
-}}
+              const newArray = [...checkedState];
+              newArray[index] = !newArray[index];
+              setCheckedState(newArray);
+            }}
           >
             {highlighted === index && (
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)] z-10"></div>
@@ -117,26 +119,16 @@ export default function App() {
 
             {obj.isFile ? (
               <div
-                className={`
-          w-4 h-4 mr-3 flex items-center justify-center border rounded-[3px] transition-all duration-200
-          border-zinc-600 ml-12 ${checkedState[index] ? "bg-blue-400" : ""}`}
-                onClick={() => {
-                  const newArray = [...checkedState];
-                  newArray[index] = !newArray[index];
-                  setCheckedState(newArray);
-                }}
-              ></div>
+                className={`w-4 h-4 mr-3 flex items-center justify-center border rounded-[3px] transition-all duration-200 ml-12 ${checkedState[index] ? "bg-[#23363C] border-[#06B6D4]" : "border-zinc-600"}`}
+              >
+                {checkedState[index] && <Check size={12} className="text-[#06B6D4]" strokeWidth={3} />}
+              </div>
             ) : (
               <div
-                className={`
-          w-4 h-4 mr-3 flex items-center justify-center border rounded-[3px] transition-all duration-200
-          border-zinc-600 ${checkedState[index] ? "bg-blue-400" : ""}`}
-                onClick={() => {
-                  const newArray = [...checkedState];
-                  newArray[index] = !newArray[index];
-                  setCheckedState(newArray);
-                }}
-              ></div>
+                className={`w-4 h-4 mr-3 flex items-center justify-center border rounded-[3px] transition-all duration-200 ${checkedState[index] ? "bg-[#23363C] border-[#06B6D4]" : "border-zinc-600"}`}
+              >
+                {checkedState[index] && <Check size={12} className="text-[#06B6D4]" strokeWidth={3} />}
+              </div>
             )}
 
             {obj.isFile ? (
