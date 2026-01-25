@@ -50,40 +50,37 @@ export default function App() {
     });
     setSelectedFileCharCount(total);
   }, [fileSelected]);
-useEffect(() => {
-  const handleKeyDown = (event: any) => {
-    if(event.key === "ArrowDown") { 
-      setHighlighted((prev) => {
-        if(prev === entries.length - 1 ) {
-         return 0
-        } else {
-          return prev + 1
-        }
-      }) 
-    } else if(event.key === "ArrowUp") { 
-      setHighlighted((prev) => {
-        if(prev === 0 ) {
-          return entries.length - 1
-        } else {
-          return prev - 1
-        }
-      })
-    } else if (event.key === " ") { 
-     
-         const newArray = [...checkedState];
-  newArray[highlighted] = !newArray[highlighted];
-  setCheckedState(newArray);
-      
-    }
+  useEffect(() => {
+    const handleKeyDown = (event: any) => {
+      if (event.key === "ArrowDown") {
+        setHighlighted((prev) => {
+          if (prev === entries.length - 1) {
+            return 0;
+          } else {
+            return prev + 1;
+          }
+        });
+      } else if (event.key === "ArrowUp") {
+        setHighlighted((prev) => {
+          if (prev === 0) {
+            return entries.length - 1;
+          } else {
+            return prev - 1;
+          }
+        });
+      } else if (event.key === " ") {
+        const newArray = [...checkedState];
+        newArray[highlighted] = !newArray[highlighted];
+        setCheckedState(newArray);
+      }
+    };
 
-  };
-  
-  window.addEventListener("keydown", handleKeyDown);
-  
-  return () => {
-    window.removeEventListener("keydown", handleKeyDown);
-  };
-}, [highlighted, checkedState]);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [highlighted, checkedState]);
   return (
     <div>
       <div className="flex items-center px-4 py-3 bg-black text-[12px]">
@@ -103,12 +100,17 @@ useEffect(() => {
         return (
           <div
             key={obj.path}
-            className={`pl-10 flex items-center py-1.5 relative ${highlighted === index ? "bg-zinc-800" : ""}`}
-          >
-            {highlighted === index &&  (
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)] z-10">
+            className={` select-none pl-10 flex items-center py-1.5 relative hover:bg-zinc-900 cursor-pointer ${highlighted === index ? "bg-zinc-800" : ""}`}
 
-            </div>)}
+            onClick={() => {
+  const newArray = [...checkedState];
+  newArray[index] = !newArray[index];
+  setCheckedState(newArray);
+}}
+          >
+            {highlighted === index && (
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)] z-10"></div>
+            )}
             {!obj.isFile && (
               <ChevronRight size={16} className="mr-2 text-[#D4D4D8]" />
             )}
