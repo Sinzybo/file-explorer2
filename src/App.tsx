@@ -1,4 +1,4 @@
-import { Folder, File, Square, ChevronRight, Check, ArrowUpDown, CornerDownLeft } from "lucide-react";
+import { Folder, File, Square, ChevronRight, Check, ArrowUpDown, CornerDownLeft, FileText } from "lucide-react";
 import { entries } from "./const.ts";
 import { useEffect, useState } from "react";
 
@@ -13,12 +13,12 @@ export default function App() {
     return (fileCharCount / sumCharCount) * 100;
   }
 
- function formatNumber(value: number): string {
-  if (value >= 1000) {
-    return (value / 1000).toFixed(1) + 'k';
+  function formatNumber(value: number): string {
+    if (value >= 1000) {
+      return (value / 1000).toFixed(1) + 'k';
+    }
+    return value.toString();
   }
-  return value.toString();
-}
 
   useEffect(() => {
     const numberOfchecked = checkedState.filter((item) => item === true);
@@ -44,20 +44,24 @@ export default function App() {
     <div>
       <div className="flex items-center px-4 py-3 bg-black text-[12px]">
         <div className="flex gap-2 mr-6 mt-2">
-          <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-          <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-          <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+          <div className="w-3 h-3 rounded-full bg-red-500/20 hover:bg-red-500 transition-colors"></div>
+          <div className="w-3 h-3 rounded-full bg-yellow-500/20 hover:bg-yellow-500 transition-colors"></div>
+          <div className="w-3 h-3 rounded-full bg-green-500/20 hover:bg-green-500 transition-colors"></div>
           <div className="opacity-50 text-sm text-white mb-1.5">
-            <span className="  ml-1 ">{">_"}</span>
-            <span className=" ml-3.5 ">citycom-cloud-v2</span>
+            <span className="ml-1">{">_"}</span>
+            <span className="ml-3.5">citycom-cloud-v2</span>
             <span className="ml-2">/</span>
-            <span className="ml-2"> ~/Users/Suny</span>
+            <span className="ml-2">~/Users/Suny</span>
           </div>
         </div>
       </div>
       {entries.map((obj, index) => {
         return (
-          <div key={obj.path} className="ml-10 flex items-center py-1.5">
+          <div key={obj.path} className="ml-10 flex items-center py-1.5 relative">
+            {!obj.isFile && (
+              <ChevronRight size={16} className="mr-2 text-[#D4D4D8]" />
+            )}
+            
             {obj.isFile ? (
               <div
                 className={`
@@ -66,7 +70,6 @@ export default function App() {
                 onClick={() => {
                   const newArray = [...checkedState];
                   newArray[index] = !newArray[index];
-
                   setCheckedState(newArray);
                 }}
               ></div>
@@ -74,8 +77,7 @@ export default function App() {
               <div
                 className={`
           w-4 h-4 mr-3 flex items-center justify-center border rounded-[3px] transition-all duration-200
-          border-zinc-600 ${checkedState[index] ? "bg-blue-400" : ""}
-        `}
+          border-zinc-600 ${checkedState[index] ? "bg-blue-400" : ""}`}
                 onClick={() => {
                   const newArray = [...checkedState];
                   newArray[index] = !newArray[index];
@@ -85,56 +87,59 @@ export default function App() {
             )}
 
             {obj.isFile ? (
-              <div className="text-[#D4D4D8] flex ">
-                <File
+              <div className="text-[#D4D4D8] flex items-center">
+                <FileText
+                  size={16}
                   className="mr-1"
                   stroke={checkedState[index] ? "#06B6D4" : "#52525B"}
                 />
                 <span
-                  className={`${checkedState[index] ? "text-[#06B6D4]" : ""}`}
+                  className={`${checkedState[index] ? "text-[#06B6D4]" : ""} ${obj.charCount === 0 ? "text-zinc-500" : ""} `}
                 >
                   {obj.name}
                 </span>
               </div>
             ) : (
-              <div className="flex text-[#D4D4D8]">
-                <ChevronRight />
+              <div className="flex text-[#D4D4D8] items-center">
                 <Folder
-                  className={`ml-2 `}
+                  size={16}
                   stroke={checkedState[index] ? "#06B6D4" : "#52525B"}
                 />
                 <span
-                  className={`ml-2 ${checkedState[index] ? "text-[#06B6D4]" : "text-[#D4D4D8]"}`}
+                  className={`ml-2 ${checkedState[index] ? "text-[#06B6D4]" : "text-[#D4D4D8]"} ${obj.charCount === 0 ? "text-zinc-500" : ""} `}
                 >
                   {obj.name}
                 </span>
               </div>
             )}
             
-            <div className="absolute right-0 mt-2.5">
-              <div className="w-24 h-1.5 bg-zinc-800 rounded-full overflow-hidden relative">
-                <div 
-                  className={`h-full rounded-full transition-all duration-500 ease-out  ${checkedState[index] ? "bg-[#06B6D4]" : "bg-zinc-700"}`}
-                  style={{ width: `${getPercent(obj.charCount)}%` }}
-                ></div>
-              </div>
-            </div>
-            <div className="absolute right-28">
+            <div className="absolute right-36">
+              {obj.charCount > 0 && ( 
               <span
-                className={`${checkedState[index] ? "text-[#06B6D4]" : "text-[#D4D4D8]"}`}
+                className={`${checkedState[index] ? "text-[#06B6D4]" : "text-zinc-500"}`}
               >
                 {formatNumber(obj.charCount)}
               </span>
+              )}
+            </div>
+            
+            <div className="absolute right-5">
+              <div className="w-24 h-1.5 bg-zinc-800 rounded-full overflow-hidden relative">
+                <div 
+                  className={`h-full rounded-full transition-all duration-500 ease-out ${checkedState[index] ? "bg-[#06B6D4]" : "bg-zinc-700"}`}
+                  style={{ width: `${getPercent(obj.charCount)}%` }}
+                ></div>
+              </div>
             </div>
           </div>
         );
       })}
 
       <div className="absolute bottom-0 h-12 min-w-full bg-[#18181b]">
-        <div className="text-zinc-500 mt-2 ">
+        <div className="text-zinc-500 mt-3.5">
           <span className={`ml-2 text-sm ${fileSelected > 0 ? "text-[#06B6D4]" : "text-zinc-500"}`}>{fileSelected} selected</span>
-          <span className="ml-2 text-xs"> | </span>
-          <span className={`${selectedFileCharCount > 0 ? "text-[#06B6D4]" : "text-zinc-500"}`}>{selectedFileCharCount}</span>
+          <span className="ml-2 text-xs">|</span>
+          <span className={`ml-2 ${selectedFileCharCount > 0 ? "text-[#06B6D4]" : "text-zinc-500"}`}>{formatNumber(selectedFileCharCount)}</span>
           <span className="ml-3">/</span>
           <span className="ml-1">{formatNumber(sumCharCount)} tokens</span>
         </div>
@@ -159,15 +164,15 @@ export default function App() {
               <kbd className="px-2 py-1 text-xs text-zinc-300 bg-zinc-800 border border-zinc-600 rounded shadow-sm">
                 <CornerDownLeft size={14} />
               </kbd>
-              <span className="text-zinc-500 text-sm ">EXECUTE</span>
+              <span className="text-zinc-500 text-sm">EXECUTE</span>
             </div>
           </div>
         </div>
 
         <div className="absolute right-4 top-1/2 -translate-y-1/2">
           <button className={`px-4 py-1.5 text-sm rounded transition-colors ${fileSelected > 0 ? "bg-blue-500 text-white" : "bg-zinc-700 text-zinc-400"}`}>
-  EXECUTE ⌘
-</button>
+            EXECUTE ⌘
+          </button>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 body { 
   background-color: #08080B;
+  font-size: 12px; /* Match the smaller base font size */
 }
 
 @font-face {
@@ -20,4 +21,15 @@ body {
 
 * {
   font-family: 'JetBrains Mono', monospace;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
 }
+
+/* Override Tailwind's text size classes to be smaller */
+.text-xs { font-size: 0.625rem; }  /* 10px */
+.text-sm { font-size: 0.75rem; }   /* 12px - smaller than default 0.875rem */
+.text-base { font-size: 0.875rem; } /* 14px */
+.text-lg { font-size: 1rem; }      /* 16px */
