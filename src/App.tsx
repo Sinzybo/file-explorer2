@@ -1,21 +1,32 @@
-import { Folder, File, Square, ChevronRight, Check, ArrowUpDown, CornerDownLeft, FileText } from "lucide-react";
+import {
+  Folder,
+  File,
+  Square,
+  ChevronRight,
+  Check,
+  ArrowUpDown,
+  CornerDownLeft,
+  FileText,
+} from "lucide-react";
 import { entries } from "./const.ts";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 
 export default function App() {
-  const [selectedFileCharCount, setSelectedFileCharCount] = useState<number>(0)
+  const [selectedFileCharCount, setSelectedFileCharCount] = useState<number>(0);
   const [checkedState, setCheckedState] = useState<boolean[]>(
     entries.map(() => false),
   );
+  const [highlighted, setHighlighted] = useState<number>(0);
+
   const [fileSelected, setFileSelected] = useState<number>(0);
-  
+
   function getPercent(fileCharCount: number) {
     return (fileCharCount / sumCharCount) * 100;
   }
 
   function formatNumber(value: number): string {
     if (value >= 1000) {
-      return (value / 1000).toFixed(1) + 'k';
+      return (value / 1000).toFixed(1) + "k";
     }
     return value.toString();
   }
@@ -24,22 +35,55 @@ export default function App() {
     const numberOfchecked = checkedState.filter((item) => item === true);
     setFileSelected(numberOfchecked.length);
   }, [checkedState]);
-  
+
   let sumCharCount = 0;
   entries.forEach((file) => {
     sumCharCount += file.charCount;
   });
-  
-  useEffect(() => {
-    let total = 0; 
-    entries.forEach((obj, index) => {
-      if(checkedState[index]) { 
-        total += obj.charCount
-      }
-    })
-    setSelectedFileCharCount(total)
-  }, [fileSelected])
 
+  useEffect(() => {
+    let total = 0;
+    entries.forEach((obj, index) => {
+      if (checkedState[index]) {
+        total += obj.charCount;
+      }
+    });
+    setSelectedFileCharCount(total);
+  }, [fileSelected]);
+useEffect(() => {
+  const handleKeyDown = (event: any) => {
+    if(event.key === "ArrowDown") { 
+      setHighlighted((prev) => {
+        if(prev === entries.length - 1 ) {
+         return 0
+        } else {
+          return prev + 1
+        }
+      }) 
+    } else if(event.key === "ArrowUp") { 
+      setHighlighted((prev) => {
+        if(prev === 0 ) {
+          return entries.length - 1
+        } else {
+          return prev - 1
+        }
+      })
+    } else if (event.key === " ") { 
+     
+         const newArray = [...checkedState];
+  newArray[highlighted] = !newArray[highlighted];
+  setCheckedState(newArray);
+      
+    }
+
+  };
+  
+  window.addEventListener("keydown", handleKeyDown);
+  
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [highlighted, checkedState]);
   return (
     <div>
       <div className="flex items-center px-4 py-3 bg-black text-[12px]">
@@ -57,11 +101,18 @@ export default function App() {
       </div>
       {entries.map((obj, index) => {
         return (
-          <div key={obj.path} className="ml-10 flex items-center py-1.5 relative">
+          <div
+            key={obj.path}
+            className={`pl-10 flex items-center py-1.5 relative ${highlighted === index ? "bg-zinc-800" : ""}`}
+          >
+            {highlighted === index &&  (
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)] z-10">
+
+            </div>)}
             {!obj.isFile && (
               <ChevronRight size={16} className="mr-2 text-[#D4D4D8]" />
             )}
-            
+
             {obj.isFile ? (
               <div
                 className={`
@@ -112,20 +163,20 @@ export default function App() {
                 </span>
               </div>
             )}
-            
+
             <div className="absolute right-36">
-              {obj.charCount > 0 && ( 
-              <span
-                className={`${checkedState[index] ? "text-[#06B6D4]" : "text-zinc-500"}`}
-              >
-                {formatNumber(obj.charCount)}
-              </span>
+              {obj.charCount > 0 && (
+                <span
+                  className={`${checkedState[index] ? "text-[#06B6D4]" : "text-zinc-500"}`}
+                >
+                  {formatNumber(obj.charCount)}
+                </span>
               )}
             </div>
-            
+
             <div className="absolute right-5">
               <div className="w-24 h-1.5 bg-zinc-800 rounded-full overflow-hidden relative">
-                <div 
+                <div
                   className={`h-full rounded-full transition-all duration-500 ease-out ${checkedState[index] ? "bg-[#06B6D4]" : "bg-zinc-700"}`}
                   style={{ width: `${getPercent(obj.charCount)}%` }}
                 ></div>
@@ -137,13 +188,21 @@ export default function App() {
 
       <div className="absolute bottom-0 h-12 min-w-full bg-[#18181b]">
         <div className="text-zinc-500 mt-3.5">
-          <span className={`ml-2 text-sm ${fileSelected > 0 ? "text-[#06B6D4]" : "text-zinc-500"}`}>{fileSelected} selected</span>
+          <span
+            className={`ml-2 text-sm ${fileSelected > 0 ? "text-[#06B6D4]" : "text-zinc-500"}`}
+          >
+            {fileSelected} selected
+          </span>
           <span className="ml-2 text-xs">|</span>
-          <span className={`ml-2 ${selectedFileCharCount > 0 ? "text-[#06B6D4]" : "text-zinc-500"}`}>{formatNumber(selectedFileCharCount)}</span>
+          <span
+            className={`ml-2 ${selectedFileCharCount > 0 ? "text-[#06B6D4]" : "text-zinc-500"}`}
+          >
+            {formatNumber(selectedFileCharCount)}
+          </span>
           <span className="ml-3">/</span>
           <span className="ml-1">{formatNumber(sumCharCount)} tokens</span>
         </div>
-        
+
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
@@ -152,14 +211,14 @@ export default function App() {
               </kbd>
               <span className="text-zinc-500 text-sm">MOVE</span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <kbd className="px-2 py-1 text-xs text-zinc-300 bg-zinc-800 border border-zinc-600 rounded shadow-sm">
                 SPACE
               </kbd>
               <span className="text-zinc-500 text-sm">SELECT</span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <kbd className="px-2 py-1 text-xs text-zinc-300 bg-zinc-800 border border-zinc-600 rounded shadow-sm">
                 <CornerDownLeft size={14} />
@@ -170,7 +229,9 @@ export default function App() {
         </div>
 
         <div className="absolute right-4 top-1/2 -translate-y-1/2">
-          <button className={`px-4 py-1.5 text-sm rounded transition-colors ${fileSelected > 0 ? "bg-blue-500 text-white" : "bg-zinc-700 text-zinc-400"}`}>
+          <button
+            className={`px-4 py-1.5 text-sm rounded transition-colors ${fileSelected > 0 ? "bg-blue-500 text-white" : "bg-zinc-700 text-zinc-400"}`}
+          >
             EXECUTE ⌘
           </button>
         </div>
