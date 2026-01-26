@@ -7,12 +7,17 @@ import {
   ArrowUpDown,
   CornerDownLeft,
   FileText,
+  ChevronDown,
 } from "lucide-react";
 import { entries } from "./const.ts";
 import { useEffect, useState, type KeyboardEvent } from "react";
 
 export default function App() {
   const [selectedFileCharCount, setSelectedFileCharCount] = useState<number>(0);
+  const [expandState, setExpandState] = useState<boolean[]>(
+    entries.map(() => true),
+  );
+
   const [checkedState, setCheckedState] = useState<boolean[]>(
     entries.map(() => false),
   );
@@ -53,32 +58,32 @@ export default function App() {
 
   useEffect(() => {
     const handleKeyDown = (event: any) => {
-      if(event.key === "ArrowDown") { 
+      if (event.key === "ArrowDown") {
         setHighlighted((prev) => {
-          if(prev === entries.length - 1 ) {
-           return 0
+          if (prev === entries.length - 1) {
+            return 0;
           } else {
-            return prev + 1
+            return prev + 1;
           }
-        }) 
-      } else if(event.key === "ArrowUp") { 
+        });
+      } else if (event.key === "ArrowUp") {
         setHighlighted((prev) => {
-          if(prev === 0 ) {
-            return entries.length - 1
+          if (prev === 0) {
+            return entries.length - 1;
           } else {
-            return prev - 1
+            return prev - 1;
           }
-        })
-      } else if (event.key === " ") { 
+        });
+      } else if (event.key === " ") {
         event.preventDefault();
         const newArray = [...checkedState];
         newArray[highlighted] = !newArray[highlighted];
         setCheckedState(newArray);
       }
     };
-    
+
     window.addEventListener("keydown", handleKeyDown);
-    
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
@@ -100,10 +105,26 @@ export default function App() {
         </div>
       </div>
       {entries.map((obj, index) => {
+        const pathParts = obj.path.split("/");
+        const depth = pathParts.length - 1;
+        const ancestors: string[] = [];
+        for (let i = 0; i < pathParts.length - 1; i++) {
+          ancestors.push(pathParts.slice(0, i + 1).join("/"));
+        }
+        for (let ancestorsPart of ancestors) {
+          const ancestorIndex = entries.findIndex(
+            (entry) => entry.path === ancestorsPart,
+          );
+          if (ancestorIndex !== -1 && !expandState[ancestorIndex]) {
+            return null;
+          }
+        }
+
         return (
           <div
             key={obj.path}
-            className={`pl-10 flex items-center py-1.5 relative hover:bg-zinc-900 cursor-pointer select-none ${highlighted === index ? "bg-zinc-800" : ""}`}
+            className={` flex items-center py-1.5 relative hover:bg-zinc-900 cursor-pointer select-none ${highlighted === index ? "bg-zinc-800" : ""} `}
+            style={{ paddingLeft: `${30 + depth * 28}px` }}
             onClick={() => {
               const newArray = [...checkedState];
               newArray[index] = !newArray[index];
@@ -113,21 +134,46 @@ export default function App() {
             {highlighted === index && (
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)] z-10"></div>
             )}
-            {!obj.isFile && (
-              <ChevronRight size={16} className="mr-2 text-[#D4D4D8]" />
-            )}
+            {!obj.isFile &&
+              (expandState[index] ? (
+                <ChevronDown
+                  size={16}
+                  className="mr-2 text-[#D4D4D8]"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    const newArray = [...expandState];
+                    newArray[index] = !newArray[index];
+                    setExpandState(newArray);
+                  }}
+                />
+              ) : (
+                <ChevronRight
+                  size={16}
+                  className="mr-2 text-[#D4D4D8]"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    const newArray = [...expandState];
+                    newArray[index] = !newArray[index];
+                    setExpandState(newArray);
+                  }}
+                />
+              ))}
 
             {obj.isFile ? (
               <div
-                className={`w-4 h-4 mr-3 flex items-center justify-center border rounded-[3px] transition-all duration-200 ml-12 ${checkedState[index] ? "bg-[#23363C] border-[#06B6D4]" : "border-zinc-600"}`}
+                className={`w-4 h-4 mr-3 flex items-center justify-center border rounded-[3px] transition-all duration-200 ${checkedState[index] ? "bg-[#23363C] border-[#06B6D4]" : "border-zinc-600"}`}
               >
-                {checkedState[index] && <Check size={12} className="text-[#06B6D4]" strokeWidth={3} />}
+                {checkedState[index] && (
+                  <Check size={12} className="text-[#06B6D4]" strokeWidth={3} />
+                )}
               </div>
             ) : (
               <div
                 className={`w-4 h-4 mr-3 flex items-center justify-center border rounded-[3px] transition-all duration-200 ${checkedState[index] ? "bg-[#23363C] border-[#06B6D4]" : "border-zinc-600"}`}
               >
-                {checkedState[index] && <Check size={12} className="text-[#06B6D4]" strokeWidth={3} />}
+                {checkedState[index] && (
+                  <Check size={12} className="text-[#06B6D4]" strokeWidth={3} />
+                )}
               </div>
             )}
 
